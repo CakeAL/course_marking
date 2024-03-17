@@ -6,12 +6,17 @@
 ## 主要功能  
 | 功能      | 描述 |
 | ----------- | ----------- |
-| Header      | Title       |
-| Paragraph   | Text        |
+| 未完成      | 未完成       |
+| 未完成   | 未完成        |
 ### TODO  
 
 ## 运行  
 本项目使用node，npm，cargo，请提前装好。  
+* cm_backend 生成entity，注意设置.env
+```bash
+cargo install sea-orm-cli
+sea-orm-cli generate entity -u postgres://cakeal:20030214@127.0.0.1:5432/course_marking -o src/entity --with-serde both
+```
 * 后端  
 ```bash
 cargo run

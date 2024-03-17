@@ -7,7 +7,7 @@ use util::get_db_connection;
 
 mod dbaccess;
 mod handler;
-mod model;
+mod entity;
 mod router;
 mod state;
 mod util;
@@ -19,8 +19,8 @@ async fn start() -> Result<()> {
 
     let app = Router::new()
         .merge(get_course_info_routes())
-        .with_state(state)
-        .fallback(any(route_not_found));
+        .fallback(any(route_not_found))
+        .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8081").await?;
     axum::serve(listener, app).await?;

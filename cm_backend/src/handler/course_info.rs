@@ -6,7 +6,7 @@ use axum::{
 use serde::Deserialize;
 
 use crate::{
-    dbaccess::course_info::{self, select_all_course_info, select_one_course_info, update_one_course_info},
+    dbaccess::course_info::*,
     state::AppState,
 };
 

@@ -32,7 +32,9 @@ mod test {
     async fn test_get_one_course_info() {
         let db_conn = get_db_connection().await.unwrap();
         let state = State::<AppState>(AppState { db_conn });
-        let info = get_one_course_info(state, Path("1029007".into())).await;
-        println!("{:?}", info);
+        // let info = get_one_course_info(state, Path("1029007".into())).await;
+        let info = get_one_course_info(state, Path("🤔".into())).await;
+        // println!("{:?}", info);
+        assert_eq!(Some(StatusCode::INTERNAL_SERVER_ERROR), info.err());
     }
 }

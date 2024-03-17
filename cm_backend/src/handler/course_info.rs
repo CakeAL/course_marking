@@ -1,14 +1,14 @@
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    Json,
+    Form, Json,
 };
+use serde::Deserialize;
 
-use crate::{dbaccess::course_info::select_one_course_info, state::AppState};
-
-pub async fn get_all_course_info(state: State<AppState>) -> Json<serde_json::Value> {
-    todo!()
-}
+use crate::{
+    dbaccess::course_info::{self, select_all_course_info, select_one_course_info, update_one_course_info},
+    state::AppState,
+};
 
 pub async fn get_one_course_info(
     state: State<AppState>,
@@ -16,9 +16,43 @@ pub async fn get_one_course_info(
 ) -> Result<Json<serde_json::Value>, StatusCode> {
     let res = select_one_course_info(&state.db_conn, course_code).await;
     match res {
-        Ok(course_info) => {
-            Ok(Json(serde_json::json!(course_info)))
-        }
+        Ok(course_info) => Ok(Json(serde_json::json!(course_info))),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+pub async fn get_all_course_info(state: State<AppState>) -> Result<Json<serde_json::Value>, StatusCode> {
+    let res = select_all_course_info(&state.db_conn).await;
+    match res {
+        Ok(course_infos) => Ok(Json(serde_json::json!(course_infos))),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+#[derive(Deserialize)]
+pub struct NewCourseInfo {
+    id: i32,
+    teacher: Option<String>,
+    is_attendance: Option<String>,
+    homework: Option<String>,
+    exam: Option<String>,
+}
+
+pub async fn change_one_course_info(
+    state: State<AppState>,
+    Form(new_course_info): Form<NewCourseInfo>,
+) -> Result<StatusCode, StatusCode> {
+    let res = update_one_course_info(
+        &state.db_conn,
+        new_course_info.id,
+        new_course_info.teacher,
+        new_course_info.is_attendance,
+        new_course_info.homework,
+        new_course_info.exam,
+    )
+    .await;
+    match res {
+        Ok(()) => Ok(StatusCode::NO_CONTENT),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }

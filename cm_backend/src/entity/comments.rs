@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "comments")]
 pub struct Model {
     #[sea_orm(primary_key)]
+    #[serde(skip_deserializing)] // Skip deserializing, 因为这个会在insert时自动生成
     pub id: i32,
     pub course_id: i32,
     pub user_id: i32,

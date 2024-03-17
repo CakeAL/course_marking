@@ -11,6 +11,7 @@ pub struct Model {
     pub username: String,
     pub student_id: String,
     pub created_at: Option<DateTime>,
+    pub password: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

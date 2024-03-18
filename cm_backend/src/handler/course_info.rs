@@ -41,7 +41,7 @@ pub struct NewCourseInfo {
 pub async fn change_one_course_info(
     state: State<AppState>,
     Form(new_course_info): Form<NewCourseInfo>,
-) -> Result<StatusCode, StatusCode> {
+) -> StatusCode {
     let res = update_one_course_info(
         &state.db_conn,
         new_course_info.id,
@@ -52,8 +52,8 @@ pub async fn change_one_course_info(
     )
     .await;
     match res {
-        Ok(()) => Ok(StatusCode::NO_CONTENT),
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+        Ok(()) => StatusCode::NO_CONTENT,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }
 

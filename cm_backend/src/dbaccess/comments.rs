@@ -1,5 +1,7 @@
 use anyhow::{Ok, Result};
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder,
+};
 use serde_json::json;
 
 use crate::entity::comments;
@@ -24,11 +26,11 @@ pub async fn select_comments_for_user(
     user_id: i32,
 ) -> Result<Vec<comments::Model>> {
     let rows = Comments::find()
-    .filter(comments::Column::UserId.eq(user_id))
-    .order_by_desc(comments::Column::CreatedAt)
-    .all(db)
-    .await?;
-Ok(rows)
+        .filter(comments::Column::UserId.eq(user_id))
+        .order_by_desc(comments::Column::CreatedAt)
+        .all(db)
+        .await?;
+    Ok(rows)
 }
 
 // 插入一条评论
@@ -42,10 +44,7 @@ pub async fn insert_comment_for_course(
 }
 
 // 删除一条评论
-pub async fn delete_comment(
-    db: &DatabaseConnection,
-    id: i32,
-) -> Result<()> {
+pub async fn delete_comment(db: &DatabaseConnection, id: i32) -> Result<()> {
     let _ = Comments::delete_by_id(id).exec(db).await?;
     Ok(())
 }
@@ -73,11 +72,15 @@ mod test {
     #[tokio::test]
     async fn test_insert_comment_for_course() {
         let db = get_db_connection().await.unwrap();
-        let res = insert_comment_for_course(&db, json!({
-            "course_id": 3,
-            "user_id": 1,
-            "comment": "test_comment"
-        })).await;
+        let res = insert_comment_for_course(
+            &db,
+            json!({
+                "course_id": 3,
+                "user_id": 1,
+                "comment": "test_comment"
+            }),
+        )
+        .await;
         println!("{:?}", res);
     }
 

@@ -4,10 +4,7 @@ use axum::{
     Json,
 };
 
-use crate::{
-    dbaccess::comments::{delete_comment, insert_comment_for_course, select_comments_for_course, select_comments_for_user},
-    state::AppState,
-};
+use crate::{dbaccess::comments::*, state::AppState};
 
 pub async fn get_comments_for_course(
     state: State<AppState>,
@@ -33,8 +30,13 @@ pub async fn get_comments_for_user(
 
 pub async fn post_comment_for_course(
     state: State<AppState>,
-    new_comment_json: serde_json::Value,
+    new_comment_raw: String,
 ) -> StatusCode {
+    // println!("{:?}", new_comment_json);
+    let new_comment_json = match serde_json::from_str(&new_comment_raw) {
+        Ok(inner) => inner,
+        Err(_) => return StatusCode::BAD_REQUEST,
+    };
     let res = insert_comment_for_course(&state.db_conn, new_comment_json).await;
     match res {
         Ok(()) => StatusCode::NO_CONTENT,
@@ -55,25 +57,31 @@ pub async fn user_delete_comment(
 
 #[cfg(test)]
 mod test {
-    use crate::util::get_db_connection;
     use super::*;
+    use crate::util::get_db_connection;
 
     #[tokio::test]
     async fn test_get_comments_for_course() {
-        let state = State::<AppState>(AppState { db_conn: get_db_connection().await.unwrap() });
+        let state = State::<AppState>(AppState {
+            db_conn: get_db_connection().await.unwrap(),
+        });
         let res = get_comments_for_course(state, Path(3)).await;
         println!("{:?}", res);
     }
 
     #[tokio::test]
     async fn test_post_comment_for_course() {
-        let state = State::<AppState>(AppState { db_conn: get_db_connection().await.unwrap() });
-        let res = post_comment_for_course(
-            state, serde_json::json!({
+        let state = State::<AppState>(AppState {
+            db_conn: get_db_connection().await.unwrap(),
+        });
+        let body = String::from(
+            r#"{
             "course_id": 3,
             "user_id": 1,
             "comment": "test_comment"
-        })).await;
+        }"#,
+        );
+        let res = post_comment_for_course(state, body).await;
         assert_eq!(res, StatusCode::NO_CONTENT);
     }
 }

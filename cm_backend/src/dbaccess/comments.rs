@@ -1,8 +1,5 @@
 use anyhow::{Ok, Result};
-use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder,
-};
-use serde_json::json;
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
 
 use crate::entity::comments;
 use crate::entity::prelude::Comments;
@@ -26,11 +23,11 @@ pub async fn select_comments_for_user(
     user_id: i32,
 ) -> Result<Vec<comments::Model>> {
     let rows = Comments::find()
-        .filter(comments::Column::UserId.eq(user_id))
-        .order_by_desc(comments::Column::CreatedAt)
-        .all(db)
-        .await?;
-    Ok(rows)
+    .filter(comments::Column::UserId.eq(user_id))
+    .order_by_desc(comments::Column::CreatedAt)
+    .all(db)
+    .await?;
+Ok(rows)
 }
 
 // 插入一条评论
@@ -38,13 +35,16 @@ pub async fn insert_comment_for_course(
     db: &DatabaseConnection,
     new_comment_json: serde_json::Value,
 ) -> Result<()> {
-    let new_comment = comments::ActiveModel::from_json(json!(new_comment_json))?;
+    let new_comment = comments::ActiveModel::from_json(new_comment_json)?;
     new_comment.insert(db).await?;
     Ok(())
 }
 
 // 删除一条评论
-pub async fn delete_comment(db: &DatabaseConnection, id: i32) -> Result<()> {
+pub async fn delete_comment(
+    db: &DatabaseConnection,
+    id: i32,
+) -> Result<()> {
     let _ = Comments::delete_by_id(id).exec(db).await?;
     Ok(())
 }
@@ -72,15 +72,11 @@ mod test {
     #[tokio::test]
     async fn test_insert_comment_for_course() {
         let db = get_db_connection().await.unwrap();
-        let res = insert_comment_for_course(
-            &db,
-            json!({
-                "course_id": 3,
-                "user_id": 1,
-                "comment": "test_comment"
-            }),
-        )
-        .await;
+        let res = insert_comment_for_course(&db, serde_json::json!({
+            "course_id": 3,
+            "user_id": 1,
+            "comment": "test_comment"
+        })).await;
         println!("{:?}", res);
     }
 

@@ -1,5 +1,8 @@
-pub mod course_info;
+use axum::http::StatusCode;
 
-pub async fn route_not_found() -> &'static str {
-    "Route Not Found. "
+pub mod course_info;
+pub mod comments;
+
+pub async fn route_not_found() -> StatusCode {
+    StatusCode::NOT_FOUND
 }

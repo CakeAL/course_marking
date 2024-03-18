@@ -1,8 +1,9 @@
-use anyhow::{Ok, Result};
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
-
 use crate::entity::comments;
 use crate::entity::prelude::Comments;
+use anyhow::{anyhow, Ok, Result};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set,
+};
 
 // 根据当前页面课程id，选择对应的所有评论并返回
 pub async fn select_comments_for_course(
@@ -23,11 +24,11 @@ pub async fn select_comments_for_user(
     user_id: i32,
 ) -> Result<Vec<comments::Model>> {
     let rows = Comments::find()
-    .filter(comments::Column::UserId.eq(user_id))
-    .order_by_desc(comments::Column::CreatedAt)
-    .all(db)
-    .await?;
-Ok(rows)
+        .filter(comments::Column::UserId.eq(user_id))
+        .order_by_desc(comments::Column::CreatedAt)
+        .all(db)
+        .await?;
+    Ok(rows)
 }
 
 // 插入一条评论
@@ -41,11 +42,47 @@ pub async fn insert_comment_for_course(
 }
 
 // 删除一条评论
-pub async fn delete_comment(
-    db: &DatabaseConnection,
-    id: i32,
-) -> Result<()> {
+pub async fn delete_comment(db: &DatabaseConnection, id: i32) -> Result<()> {
     let _ = Comments::delete_by_id(id).exec(db).await?;
+    Ok(())
+}
+
+// up_votes
+pub async fn update_up_votes(db: &DatabaseConnection, id: i32) -> Result<()> {
+    let comment: Option<comments::Model> = Comments::find_by_id(id).one(db).await?;
+    let up_votes: Option<i32> = if let Some(v) = &comment {
+        (*v).up_votes
+    }
+    else {
+        return Err(anyhow::anyhow!("no comment found"));
+    };
+    let mut new_comment: comments::ActiveModel = comment.unwrap().into();
+    new_comment.up_votes = Set(if let Some(v) = up_votes {
+        Some(v + 1)
+    } else {
+        Some(1) //这里应该永远不会执行到
+    });
+    new_comment.update(db).await?;
+    Ok(())
+}
+
+// down_votes
+pub async fn update_down_votes(db: &DatabaseConnection, id: i32) -> Result<()> {
+    let comment = Comments::find_by_id(id).one(db).await?;
+    let down_votes: Option<i32> = if let Some(v) = &comment {
+        // println!("{:?}", (*v).down_votes);
+        (*v).down_votes
+    }
+    else {
+        return Err(anyhow::anyhow!("no comment found"));
+    };
+    let mut new_comment: comments::ActiveModel = comment.unwrap().into();
+    new_comment.down_votes = Set(if let Some(v) = down_votes {
+        Some(v + 1)
+    } else {
+        Some(1) //这里应该永远不会执行到
+    });
+    new_comment.update(db).await?;
     Ok(())
 }
 
@@ -72,11 +109,16 @@ mod test {
     #[tokio::test]
     async fn test_insert_comment_for_course() {
         let db = get_db_connection().await.unwrap();
-        let res = insert_comment_for_course(&db, serde_json::json!({
-            "course_id": 3,
-            "user_id": 1,
-            "comment": "test_comment"
-        })).await;
+        let res = insert_comment_for_course(
+            &db,
+            serde_json::json!({
+                "course_id": 3,
+                "user_id": 1,
+                "comment": "test_comment",
+                "username": "test_user",
+            }),
+        )
+        .await;
         println!("{:?}", res);
     }
 
@@ -85,5 +127,12 @@ mod test {
         let db = get_db_connection().await.unwrap();
         let res = delete_comment(&db, 24).await;
         println!("{:?}", res);
+    }
+
+    #[tokio::test]
+    async fn test_update_down_votes() {
+        let db = get_db_connection().await.unwrap();
+        let res = update_down_votes(&db, 1);
+        assert_eq!(res.await.unwrap(), ());
     }
 }

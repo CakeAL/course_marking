@@ -39,7 +39,7 @@ pub async fn post_comment_for_course(
     };
     let res = insert_comment_for_course(&state.db_conn, new_comment_json).await;
     match res {
-        Ok(()) => StatusCode::NO_CONTENT,
+        Ok(()) => StatusCode::CREATED,
         Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }
@@ -49,6 +49,28 @@ pub async fn user_delete_comment(
     Path(comment_id): Path<i32>,
 ) -> StatusCode {
     let res = delete_comment(&state.db_conn, comment_id).await;
+    match res {
+        Ok(()) => StatusCode::RESET_CONTENT,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    }
+}
+
+pub async fn up_votes_addone(
+    state: State<AppState>,
+    Path(comment_id): Path<i32>,
+) -> StatusCode {
+    let res = update_up_votes(&state.db_conn, comment_id).await;
+    match res {
+        Ok(()) => StatusCode::NO_CONTENT,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    }
+}
+
+pub async fn down_votes_addone(
+    state: State<AppState>,
+    Path(comment_id): Path<i32>,
+) -> StatusCode {
+    let res = update_down_votes(&state.db_conn, comment_id).await;
     match res {
         Ok(()) => StatusCode::NO_CONTENT,
         Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
@@ -78,10 +100,11 @@ mod test {
             r#"{
             "course_id": 3,
             "user_id": 1,
-            "comment": "test_comment"
+            "comment": "test_comment",
+            "username": "test_user"
         }"#,
         );
         let res = post_comment_for_course(state, body).await;
-        assert_eq!(res, StatusCode::NO_CONTENT);
+        assert_eq!(res, StatusCode::CREATED);
     }
 }

@@ -52,7 +52,7 @@ pub async fn change_one_course_info(
     )
     .await;
     match res {
-        Ok(()) => StatusCode::NO_CONTENT,
+        Ok(()) => StatusCode::RESET_CONTENT,
         Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }

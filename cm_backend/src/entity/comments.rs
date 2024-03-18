@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "comments")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    #[serde(skip_deserializing)] // Skip deserializing, 因为这个会在insert时自动生成
+    #[serde(skip_deserializing)]
     pub id: i32,
     pub course_id: i32,
     pub user_id: i32,
@@ -15,6 +15,7 @@ pub struct Model {
     pub up_votes: Option<i32>,
     pub down_votes: Option<i32>,
     pub created_at: Option<DateTime>,
+    pub username: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

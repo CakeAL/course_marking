@@ -3,6 +3,7 @@ use axum::{routing::any, Router};
 use router::comments::*;
 use router::course_info::*;
 use router::route_not_found;
+use router::users::*;
 use state::AppState;
 use std::net::SocketAddr;
 use tower_http::trace::{self, TraceLayer};
@@ -24,6 +25,7 @@ async fn start() -> Result<()> {
     let app = Router::new()
         .merge(course_info_routes())
         .merge(comments_routes())
+        .merge(users_routes())
         .fallback(any(route_not_found))
         .with_state(state)
         .layer(

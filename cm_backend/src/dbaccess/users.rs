@@ -9,10 +9,10 @@ use sea_orm::{
 // 根据学号查询用户信息，然后返回密码
 pub async fn select_password_for_user(
     db: &DatabaseConnection,
-    student_id: String,
+    student_id: &String,
 ) -> Result<String> {
     let row = Users::find()
-        .filter(users::Column::StudentId.eq(&student_id))
+        .filter(users::Column::StudentId.eq(student_id))
         .select_only()
         .column(users::Column::Password)
         .one(db)
@@ -23,22 +23,22 @@ pub async fn select_password_for_user(
     }
 }
 
-// 根据username查询用户信息，然后返回密码
-pub async fn select_password_for_username(
-    db: &DatabaseConnection,
-    username: String,
-) -> Result<String> {
-    let row = Users::find()
-        .filter(users::Column::Username.eq(&username))
-        .select_only()
-        .column(users::Column::Password)
-        .one(db)
-        .await?;
-    match row {
-        Some(user) => Ok(user.password.unwrap()),
-        None => Err(anyhow::anyhow!("password is not found")),
-    }
-}
+// // 根据username查询用户信息，然后返回密码
+// pub async fn select_password_for_username(
+//     db: &DatabaseConnection,
+//     username: String,
+// ) -> Result<String> {
+//     let row = Users::find()
+//         .filter(users::Column::Username.eq(&username))
+//         .select_only()
+//         .column(users::Column::Password)
+//         .one(db)
+//         .await?;
+//     match row {
+//         Some(user) => Ok(user.password.unwrap()),
+//         None => Err(anyhow::anyhow!("password is not found")),
+//     }
+// }
 
 // 注册用户
 pub async fn insert_a_user(
@@ -86,3 +86,4 @@ pub async fn update_user_password(
     new_user.update(db).await?;
     Ok(())
 }
+

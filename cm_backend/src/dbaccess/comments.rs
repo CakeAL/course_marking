@@ -1,6 +1,6 @@
 use crate::entity::comments;
 use crate::entity::prelude::Comments;
-use anyhow::{anyhow, Ok, Result};
+use anyhow::Result;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set,
 };

@@ -5,6 +5,7 @@ use axum::{
     Router,
 };
 
+
 pub fn course_info_routes() -> Router<AppState> {
     Router::new()
         .route("/api/course_info/getall", get(get_all_course_info))

@@ -11,10 +11,10 @@ pub async fn select_password_for_user(
     db: &DatabaseConnection,
     student_id: &String,
 ) -> Result<String> {
-    let row = Users::find()
+    let row: Option<users::Model> = Users::find()
         .filter(users::Column::StudentId.eq(student_id))
-        .select_only()
-        .column(users::Column::Password)
+        // .select_only()
+        // .column(users::Column::Password)
         .one(db)
         .await?;
     match row {
@@ -86,4 +86,3 @@ pub async fn update_user_password(
     new_user.update(db).await?;
     Ok(())
 }
-

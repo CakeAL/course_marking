@@ -1,5 +1,7 @@
 use crate::{
-    dbaccess::users::{insert_a_user, select_password_for_user, select_user_info, update_user_password},
+    dbaccess::users::{
+        insert_a_user, select_password_for_user, select_user_info, update_user_password,
+    },
     state::AppState,
 };
 use axum::{
@@ -9,8 +11,10 @@ use axum::{
     Form, Json,
 };
 use serde_json::json;
+use tower_cookies::Cookies;
+use super::check_student_id_cookie;
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct LoginUserInfo {
     student_id: String,
     password: String,
@@ -33,6 +37,7 @@ pub async fn determine_password_for_user(
     }
     // 查询对应学号密码
     let res = select_password_for_user(&state.db_conn, &login_user_info.student_id).await;
+    // println!("{}\n{:?}", login_user_info.student_id, res);
     match res {
         // 查询到了密码
         Ok(user_password) => {
@@ -45,12 +50,13 @@ pub async fn determine_password_for_user(
                 (StatusCode::FOUND, headers)
             // 正确的话，设置cookie
             } else {
+                println!("{}\n{}", login_user_info.password, user_password);
                 let cookie = format!("{}={}", "StudentId", login_user_info.student_id);
                 headers.insert(
                     axum::http::header::SET_COOKIE,
                     cookie.as_str().parse().unwrap(),
                 );
-                headers.insert(axum::http::header::LOCATION, "/".parse().unwrap());
+                // headers.insert(axum::http::header::LOCATION, "/".parse().unwrap());
                 (StatusCode::FOUND, headers)
             }
         }
@@ -115,8 +121,13 @@ pub struct ChangeUserPassword {
 
 pub async fn change_user_password(
     state: State<AppState>,
+    cookies: Cookies,
     Form(change_user_password): Form<ChangeUserPassword>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
+    // 检查用户权限
+    if let Err(err) = check_student_id_cookie(&state, &cookies).await {
+        return Err(err);
+    }
     let old_password =
         match select_password_for_user(&state.db_conn, &change_user_password.student_id).await {
             Ok(pass) => pass,
@@ -125,13 +136,26 @@ pub async fn change_user_password(
     if old_password == change_user_password.password {
         Ok(Json(json!(r#"{"error":"新密码不能与原来的密码相同"}"#)))
     } else {
-        let res = update_user_password(&state.db_conn, 
-            change_user_password.user_id, 
-            change_user_password.password
-        ).await;
+        let res = update_user_password(
+            &state.db_conn,
+            change_user_password.user_id,
+            change_user_password.password,
+        )
+        .await;
         match res {
             Ok(()) => Ok(Json(json!(r#"{"success":"密码修改成功"}"#))),
             Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
         }
     }
+}
+
+pub async fn user_logout() -> (StatusCode, HeaderMap) {
+    let cookie = format!("{}=", "StudentId");
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::SET_COOKIE,
+        cookie.as_str().parse().unwrap(),
+    );
+    // headers.insert(axum::http::header::LOCATION, "/".parse().unwrap());
+    (StatusCode::FOUND, headers)
 }

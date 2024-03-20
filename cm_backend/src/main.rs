@@ -6,6 +6,7 @@ use router::route_not_found;
 use router::users::*;
 use state::AppState;
 use std::net::SocketAddr;
+use tower_cookies::CookieManagerLayer;
 use tower_http::trace::{self, TraceLayer};
 use tracing::Level;
 use util::get_db_connection;
@@ -28,6 +29,7 @@ async fn start() -> Result<()> {
         .merge(users_routes())
         .fallback(any(route_not_found))
         .with_state(state)
+        .layer(CookieManagerLayer::new()) // cookies中间件
         .layer(
             // 中间件，用于Tracing日志
             TraceLayer::new_for_http()

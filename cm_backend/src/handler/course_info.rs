@@ -4,11 +4,14 @@ use axum::{
     Form, Json,
 };
 use serde::Deserialize;
+use tower_cookies::Cookies;
 
 use crate::{
     dbaccess::course_info::*,
     state::AppState,
 };
+
+use super::check_student_id_cookie;
 
 pub async fn get_one_course_info(
     state: State<AppState>,
@@ -40,8 +43,12 @@ pub struct NewCourseInfo {
 
 pub async fn change_one_course_info(
     state: State<AppState>,
+    cookies: Cookies,
     Form(new_course_info): Form<NewCourseInfo>,
 ) -> StatusCode {
+    if let Err(err) = check_student_id_cookie(&state, &cookies).await {
+        return err;
+    }
     let res = update_one_course_info(
         &state.db_conn,
         new_course_info.id,

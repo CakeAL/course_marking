@@ -33,6 +33,5 @@ npm install
 npm run dev
 ```
 
-## 负责人
-
 ## License
+[MIT License](LICENSE)  

@@ -9,6 +9,7 @@ pub mod course_info;
 pub mod users;
 
 // 该函数用来检查cookie是否设置正确，如果错误返回401
+// 这个cookie非常水，没个屁用，甚至可以伪造来给后端发请求
 pub async fn check_student_id_cookie(
     state: &State<AppState>,
     cookies: &Cookies,

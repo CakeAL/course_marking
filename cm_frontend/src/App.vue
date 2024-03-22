@@ -47,38 +47,48 @@ const changeIcon = () => {
   <a href="#/userlogin">User Login</a><br />
   <a href="#/userpage">User Page</a><br /> 
   -->
-  <el-menu
-    :default-active="activeIndex"
-    class="el-menu"
-    mode="horizontal"
-    @select="handleSelect"
-  >
-    <el-menu-item index="0" @click="changeIcon" class="el-menu-icon">
-      <transition name="fade">
-        <div v-if="icon === '1'">
-          <el-icon><Expand /></el-icon>
-        </div>
-        <div v-else>
-          <el-icon><Fold /></el-icon>
-        </div>
-      </transition>
-    </el-menu-item>
-    <el-menu-item index="1">
-      <a href="#/" class="menu-title">
-        Public Course Marking —— USTB公选课打分系统
-      </a>
-    </el-menu-item>
-  </el-menu>
-  <div class="menu-component-container">
-    <el-menu class="el-menu-vertical" :collapse="isCollapse">
-      <el-menu-item index="1">
-        <el-icon><IconMenu /></el-icon>
-        <template #title><a href="#/">主页</a></template>
-      </el-menu-item>
-    </el-menu>
-
-    <component :is="currentView" class="show-content" />
+  <div class="common-layout">
+    <el-container>
+      <el-header style="padding: 0">
+        <el-menu
+          :default-active="activeIndex"
+          class="el-menu"
+          mode="horizontal"
+          @select="handleSelect"
+        >
+          <el-menu-item index="0" @click="changeIcon" class="el-menu-icon">
+            <div v-if="icon === '1'">
+              <el-icon><Expand /></el-icon>
+            </div>
+            <div v-else>
+              <el-icon><Fold /></el-icon>
+            </div>
+          </el-menu-item>
+          <el-menu-item index="1">
+            <a href="#/" class="menu-title">
+              Public Course Marking —— USTB公选课打分系统
+            </a>
+          </el-menu-item>
+        </el-menu>
+      </el-header>
+      <el-container>
+        <el-aside width="200px">
+          <el-menu class="el-menu-vertical" :collapse="isCollapse">
+            <a href="#/">
+            <el-menu-item index="1">
+              <el-icon><IconMenu /></el-icon>
+              <template #title>主页</template>
+            </el-menu-item></a>
+          </el-menu>
+        </el-aside>
+        <el-main>
+          <component :is="currentView" class="show-content" />
+        </el-main>
+      </el-container>
+    </el-container>
   </div>
+
+
 </template>
 
 <style scoped>
@@ -86,14 +96,6 @@ const changeIcon = () => {
   font-size: 1.3em;
   font-weight: bold;
   text-decoration: none;
-}
-
-.el-menu-vertical {
-  /* position: fixed; */
-  top: 0;
-  left: 0;
-  height: 100vh;
-  flex: 0 0 auto;
 }
 
 .el-menu-vertical:not(.el-menu--collapse) {
@@ -112,8 +114,4 @@ const changeIcon = () => {
   display: flex;
 }
 
-.menu-component-container {
-  display: flex;
-  align-items: flex-start;
-}
 </style>

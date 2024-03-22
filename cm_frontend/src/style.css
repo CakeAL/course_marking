@@ -82,3 +82,7 @@ body {
   margin: 0;
   display: block;
 }
+
+a {
+  text-decoration: none;
+}

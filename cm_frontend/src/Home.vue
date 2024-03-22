@@ -1,5 +1,6 @@
 <script setup>
 import axios from "axios";
+import codeStore from "./codeStore.js";
 
 const coursesData = ref(null);
 
@@ -17,18 +18,26 @@ const fetchCoursesData = async () => {
   }
 };
 
-const getCoursePageLink = (courseCode) => {
-  return `#/coursepage/${courseCode}`;
-};
+// const getCoursePageLink = (courseCode) => {
+//   return `#/coursepage/${courseCode}`;
+// };
+// getCoursePageLink(course.course_code)
+
+const changeCourseCode = (courseCode) => {
+  codeStore.courseCode = courseCode;
+  // console.log(currentCourseCode.value);
+}
+
 </script>
 
 <template>
   <div v-for="course in coursesData" class="show-content">
-    <a :href="getCoursePageLink(course.course_code)">
+    <a href="#/coursepage">
       <el-card
         style="max-width: 600px"
         shadow="hover"
         class="content-component"
+        @click="changeCourseCode(course.course_code)"
       >
         <template #header>
           <div class="card-header">

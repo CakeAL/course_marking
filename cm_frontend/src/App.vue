@@ -26,15 +26,22 @@ const currentView = computed(() => {
 });
 // el-menu 上面
 const activeIndex = ref("0");
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
+
 // el-menu 侧面
 const icon = ref("1");
 const isCollapse = ref(true);
+const asideWidth = ref("64px")
 const changeIcon = () => {
   icon.value = icon.value === "1" ? "2" : "1";
   isCollapse.value = icon.value === "1" ? true : false;
+  if (icon.value === "1") {
+    setTimeout(() => {
+      asideWidth.value = "64px";
+    }, 500);
+  }
+  else {
+    asideWidth.value = "200px";
+  }
 };
 </script>
 
@@ -54,7 +61,6 @@ const changeIcon = () => {
           :default-active="activeIndex"
           class="el-menu"
           mode="horizontal"
-          @select="handleSelect"
         >
           <el-menu-item index="0" @click="changeIcon" class="el-menu-icon">
             <div v-if="icon === '1'">
@@ -72,23 +78,23 @@ const changeIcon = () => {
         </el-menu>
       </el-header>
       <el-container>
-        <el-aside width="200px">
+        <el-aside :width="asideWidth">
           <el-menu class="el-menu-vertical" :collapse="isCollapse">
             <a href="#/">
-            <el-menu-item index="1">
-              <el-icon><IconMenu /></el-icon>
-              <template #title>主页</template>
-            </el-menu-item></a>
+              <el-menu-item index="1">
+                <el-icon><IconMenu /></el-icon>
+                <template #title>主页</template>
+              </el-menu-item></a
+            >
           </el-menu>
         </el-aside>
         <el-main>
-          <component :is="currentView" class="show-content" />
+          <component :is="currentView" />
         </el-main>
       </el-container>
     </el-container>
   </div>
-
-
+  <el-backtop :right="100" :bottom="100" />
 </template>
 
 <style scoped>
@@ -98,20 +104,15 @@ const changeIcon = () => {
   text-decoration: none;
 }
 
+.el-menu-vertical {
+  min-height: 100%;
+}
+
 .el-menu-vertical:not(.el-menu--collapse) {
   width: 200px;
-  min-height: 100%;
 }
 
 .el-menu-icon {
   width: 63px;
 }
-
-.show-content {
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-
 </style>

@@ -1,7 +1,7 @@
 # Course marking 公选课学生打分系统  
 ## 简介  
 这是一个前后端分离(人不分离)的Web APP。  
-前端使用Vue构建，后端使用Rust + Axum + SeaORM，数据库使用Postgres。  
+前端使用Vue + Element-Plus构建，后端使用Rust + Axum + SeaORM，数据库使用Postgres。  
 用来给学校的公选课打分和评价。  
 ## 主要功能  
 | 功能      | 描述 |

@@ -3,7 +3,7 @@
 </script>
 
 <template>
-      <h1>Not Found</h1>
+    <el-empty description="你来到了未知的领域" />
 </template>
 
 <style scoped>

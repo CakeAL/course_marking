@@ -14,6 +14,7 @@
 2. 课程评分暂未实装  
 3. 改进Cookie  
 4. 评论部分可以每次读取10条，无限滚动。  
+5. 评论的时间是UTC，不是UTC+8🤔  
 ## 运行  
 本项目使用node，npm，cargo，请提前装好。  
 * cm_backend 生成entity，注意设置.env  

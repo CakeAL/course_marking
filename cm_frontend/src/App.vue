@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 // import { ref, computed } from "vue";
 // 图标
 import { Menu as IconMenu, Expand, Fold } from "@element-plus/icons-vue";

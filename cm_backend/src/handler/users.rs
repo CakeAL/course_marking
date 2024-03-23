@@ -33,7 +33,7 @@ pub async fn determine_password_for_user(
             axum::http::header::LOCATION,
             "/login?msg=验证码错误".parse().unwrap(),
         );
-        return (StatusCode::FOUND, headers);
+        return (StatusCode::IM_A_TEAPOT, headers);
     }
     // 查询对应学号密码
     let res = select_password_for_user(&state.db_conn, &login_user_info.student_id).await;
@@ -47,7 +47,7 @@ pub async fn determine_password_for_user(
                     axum::http::header::LOCATION,
                     "/login?msg=学号或密码错误".parse().unwrap(),
                 );
-                (StatusCode::FOUND, headers)
+                (StatusCode::IM_A_TEAPOT, headers)
             // 正确的话，设置cookie
             } else {
                 println!("{}\n{}", login_user_info.password, user_password);
@@ -57,7 +57,7 @@ pub async fn determine_password_for_user(
                     cookie.as_str().parse().unwrap(),
                 );
                 // headers.insert(axum::http::header::LOCATION, "/".parse().unwrap());
-                (StatusCode::FOUND, headers)
+                (StatusCode::OK, headers)
             }
         }
         // 查询出错，直接重定向到学号或者密码错误
@@ -66,7 +66,7 @@ pub async fn determine_password_for_user(
                 axum::http::header::LOCATION,
                 "/login?msg=学号或密码错误".parse().unwrap(),
             );
-            (StatusCode::FOUND, headers)
+            (StatusCode::IM_A_TEAPOT, headers)
         }
     }
 }
@@ -103,9 +103,9 @@ pub async fn register_a_user(
 
 pub async fn get_user_info(
     state: State<AppState>,
-    Path(username): Path<String>,
+    Path(student_id): Path<String>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
-    let res = select_user_info(&state.db_conn, username).await;
+    let res = select_user_info(&state.db_conn, student_id).await;
     match res {
         Ok(info) => Ok(Json(serde_json::json!(info))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),

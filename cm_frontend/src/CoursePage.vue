@@ -56,6 +56,36 @@ const changeDownVotes = async (comment_id) => {
     ElMessage.error(error + "可能是因为没登录的原因吧");
   }
 };
+const changeCourseForm = reactive({
+  id: 1,
+  teacher: "",
+  is_attendance: "",
+  homework: "",
+  exam: "",
+});
+
+const onSubmitCourse = async () => {
+  changeCourseForm.id = courseData.value.id;
+  // console.log(changeCourseForm);
+  try {
+    const response = await axios.post(
+      "/api/course_info/changeone",
+      changeCourseForm,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    ElMessage({
+      message: "更改信息成功！点一次就行了。",
+      type: "success",
+    });
+  } catch (error) {
+    //console.error(error);
+    ElMessage.error(error + "可能是因为没登录的原因吧");
+  }
+};
 </script>
 
 <template>
@@ -109,7 +139,44 @@ const changeDownVotes = async (comment_id) => {
           </div>
         </el-timeline>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <el-collapse>
+          <el-collapse-item
+            title="想要更改左侧的课程信息/左侧的课程信息有错误？点击我即可更改。"
+            name="1"
+          >
+            <div>
+              <el-form
+                :model="changeCourseForm"
+                label-width="auto"
+                style="max-width: 600px"
+              >
+                <p>如果你只想改一项，也需要全部填写（把左侧的复制过来🤔）</p>
+                <el-form-item label="教师姓名">
+                  <el-input v-model="changeCourseForm.teacher" />
+                </el-form-item>
+                <el-form-item label="点名形式">
+                  <el-input v-model="changeCourseForm.is_attendance" />
+                </el-form-item>
+                <el-form-item label="作业相关">
+                  <el-input v-model="changeCourseForm.homework" />
+                </el-form-item>
+                <el-form-item label="考试相关">
+                  <el-input v-model="changeCourseForm.exam" />
+                </el-form-item>
+                <el-button type="primary" @click="onSubmitCourse"
+                  >改一下</el-button
+                >
+              </el-form>
+            </div>
+          </el-collapse-item>
+          <el-collapse-item title="想要添加一条评论？" name="2">
+            <div>
+              Nothing here.
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+      </el-main>
     </el-container>
   </div>
 </template>

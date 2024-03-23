@@ -58,9 +58,9 @@ pub async fn insert_a_user(
 }
 
 // 返回当前用户所有信息
-pub async fn select_user_info(db: &DatabaseConnection, username: String) -> Result<users::Model> {
+pub async fn select_user_info(db: &DatabaseConnection, student_id: String) -> Result<users::Model> {
     let row = Users::find()
-        .filter(users::Column::Username.eq(&username))
+        .filter(users::Column::StudentId.eq(&student_id))
         .select_only()
         .columns(users::Column::iter().filter(|col| match col {
             users::Column::Password => false,

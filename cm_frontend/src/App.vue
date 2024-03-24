@@ -1,7 +1,14 @@
 <script setup>
 // import { ref, computed } from "vue";
+import codeStore from "./codeStore.js";
 // 图标
-import { Menu as IconMenu, Expand, Fold, User, InfoFilled } from "@element-plus/icons-vue";
+import {
+  Menu as IconMenu,
+  Expand,
+  Fold,
+  User,
+  InfoFilled,
+} from "@element-plus/icons-vue";
 // 子页面
 import Home from "/src/Home.vue";
 import About from "/src/About.vue";
@@ -41,19 +48,6 @@ const changeIcon = () => {
   } else {
     asideWidth.value = "200px";
   }
-};
-// 检测cookie，随便伪造😅
-const checkCookieExists = (cookieName) => {
-  const cookies = document.cookie.split(";");
-
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].trim();
-    if (cookie.startsWith(cookieName + "=")) {
-      return true;
-    }
-  }
-
-  return false;
 };
 </script>
 
@@ -98,28 +92,24 @@ const checkCookieExists = (cookieName) => {
                 <template #title>主页</template>
               </el-menu-item></a
             >
-            <div v-if="checkCookieExists('StudentId')">
-              <a href="#/userlogin">
-                <el-menu-item index="2">
-                  <el-icon><User /></el-icon>
-                  <template #title>个人主页</template>
-                </el-menu-item>
-              </a>
-            </div>
-            <div v-else>
-              <a href="#/userlogin">
-                <el-menu-item index="2">
-                  <el-icon><User /></el-icon>
-                  <template #title>登录/注册</template>
-                </el-menu-item>
-              </a>
-            </div>
+            <a href="#/userpage">
+              <el-menu-item index="2">
+                <el-icon><User /></el-icon>
+                <template #title>个人主页</template>
+              </el-menu-item>
+            </a>
+            <a href="#/userlogin">
+              <el-menu-item index="3">
+                <el-icon><User /></el-icon>
+                <template #title>登录/注册</template>
+              </el-menu-item>
+            </a>
             <a href="#/about">
-                <el-menu-item index="2">
-                  <el-icon><InfoFilled /></el-icon>
-                  <template #title>关于</template>
-                </el-menu-item>
-              </a>
+              <el-menu-item index="4">
+                <el-icon><InfoFilled /></el-icon>
+                <template #title>关于</template>
+              </el-menu-item>
+            </a>
           </el-menu>
         </el-aside>
         <el-main>

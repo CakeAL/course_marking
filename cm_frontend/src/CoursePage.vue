@@ -86,6 +86,37 @@ const onSubmitCourse = async () => {
     ElMessage.error(error + "可能是因为没登录的原因吧");
   }
 };
+
+const comment = reactive({
+  course_id: 0,
+  user_id: 0,
+  comment: "",
+  username: "",
+});
+
+const onSubmitComment = async () => {
+  comment.course_id = courseData.value.id;
+  comment.user_id = codeStore.userInfo.id;
+  comment.username = codeStore.userInfo.username;
+  try {
+    const response = await axios.post(
+      "/api/comments/postone",
+      comment,
+      {
+        headers: {
+          "Content-Type": "text/plain",
+        },
+      }
+    );
+    ElMessage({
+      message: "提交评论成功！点一次就行了。",
+      type: "success",
+    });
+  } catch (error) {
+    //console.error(error);
+    ElMessage.error(error + "可能是因为没登录的原因吧");
+  }
+}
 </script>
 
 <template>
@@ -172,7 +203,19 @@ const onSubmitCourse = async () => {
           </el-collapse-item>
           <el-collapse-item title="想要添加一条评论？" name="2">
             <div>
-              Nothing here.
+              <el-form
+                :model="comment"
+                label-width="auto"
+                style="max-width: 600px"
+              >
+                <el-form-item label="评论内容">
+                  <el-input v-model="comment.comment" />
+                </el-form-item>
+                <el-button type="primary" @click="onSubmitComment"
+                  >提交评论</el-button
+                >
+                <p>如果遇到服务器内部错误500，可能需要重新登录🤔我懒得搞这些错误，登录完成不要刷新网页</p>
+              </el-form>
             </div>
           </el-collapse-item>
         </el-collapse>

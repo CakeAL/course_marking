@@ -78,7 +78,7 @@ const getUserInfo = async (student_id) => {
   try {
     const response = await axios.get("/api/users/getinfo/" + student_id);
     codeStore.userInfo = response.data;
-    console.log(codeStore.userInfo);
+    // console.log(codeStore.userInfo);
   } catch (error) {
     //console.error(error);
     ElMessage.error(error + "🤔");

@@ -50,8 +50,8 @@ pub async fn determine_password_for_user(
                 (StatusCode::IM_A_TEAPOT, headers)
             // 正确的话，设置cookie
             } else {
-                println!("{}\n{}", login_user_info.password, user_password);
-                let cookie = format!("{}={}", "StudentId", login_user_info.student_id);
+                // println!("{}\n{}", login_user_info.password, user_password);
+                let cookie = format!("{}={}; Path=/api", "StudentId", login_user_info.student_id);
                 headers.insert(
                     axum::http::header::SET_COOKIE,
                     cookie.as_str().parse().unwrap(),

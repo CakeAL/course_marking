@@ -125,7 +125,7 @@ const onSubmitComment = async () => {
       <el-aside width="650px">
         <el-card
           style="max-width: 600px; margin-bottom: 20px"
-          shadow="hover"
+          shadow="always"
           class="content-component"
         >
           <template #header>
